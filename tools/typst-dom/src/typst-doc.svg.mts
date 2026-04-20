@@ -92,45 +92,24 @@ export function provideSvgDoc<
           // todo: draw cursor for image and shape elements
           if (foundUse !== undefined) {
             const g = leaf[0] as SVGGraphicsElement;
-            // const textBase = g.getBBox();
+            const textBase = g.getBBox();
             const rectBase = foundUse.getBBox();
             const rectNextBase = foundUseNext?.getBBox();
             const rect = {
               // Some char does not have position so they are resolved to 0
               right: rectBase.width !== 0 ? rectBase.x + rectBase.width : rectNextBase?.x || 0,
               // todo: have bug
-              // top: textBase.height / 2,
+              top: textBase.height,
             };
 
-            // Gets transform matrix
-            const mat = g.getScreenCTM();
-
-            // Calculates correct 5px radius
-            let rx = 5;
-            let ry = 5;
-            const matInv = mat?.inverse();
-            if (matInv) {
-              const sx = matInv.a;
-              const ky = matInv.b;
-              const kx = matInv.c;
-              const sy = matInv.d;
-
-              const rrx = rx * sx + ry * kx;
-              const rry = ry * sy + rx * ky;
-              rx = rrx;
-              ry = rry;
-            }
-            rx = Math.abs(rx);
-            ry = Math.abs(ry);
-
-            // Creates a circle with 5px radius (but regard vertical and horizontal scale)
-            const t = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+            // Creates a typing cursor
+            const t = document.createElementNS("http://www.w3.org/2000/svg", "rect");
             t.classList.add("typst-svg-cursor");
-            t.setAttribute("cx", `${rect.right}`);
-            // t.setAttribute('cy', `${rect.top}`);
-            t.setAttribute("rx", `${rx}`);
-            t.setAttribute("ry", `${ry}`);
-            t.setAttribute("fill", "#86C16688");
+            t.setAttribute("x", `${rect.right+50}`);
+            t.setAttribute("y", `${-250}`);
+            t.setAttribute("width", `${100}`);
+            t.setAttribute("height", `${rect.top}`);
+            t.setAttribute("stroke", "#00000088");
             leaf[0].appendChild(t);
           }
         }
